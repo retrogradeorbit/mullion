@@ -1,5 +1,6 @@
 (ns mullion.reflection
-  (:require [cheshire.core :as cheshire]))
+  (:require [cheshire.core :as cheshire]
+            [clojure.java.io :as io]))
 
 ;; Write out graal reflection configs
 

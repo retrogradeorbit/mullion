@@ -11,6 +11,7 @@ clean:
 	lein clean
 
 target/uberjar/mullion-$(VERSION)-standalone.jar: $(SRC)
+	-mkdir graal-configs
 	GRAALVM_HOME=$(GRAALVM_HOME) lein uberjar
 
 analyse:
