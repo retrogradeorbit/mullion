@@ -8,7 +8,7 @@
                  [cheshire "5.10.0"]]
   :main ^:skip-aot mullion.core
   :java-source-paths ["src/java"]
-  :jvm-opts ["-Djava.library.path=./"
+  :jvm-opts [#=(str "-Djava.library.path=" #= (java.lang.System/getenv "HOME") "/.mullion/libs")
              "-Dorg.bytedeco.javacpp.logger.debug=true"]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
