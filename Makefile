@@ -1,7 +1,7 @@
 GRAALVM_HOME = $(HOME)/graalvm-ce-java11-20.1.0
 JAVA_HOME = $(GRAALVM_HOME)
 PATH = $(GRAALVM_HOME)/bin:$(shell echo $$PATH)
-SRC = src/decloj/core.clj
+SRC = src/mullion/core.clj
 VERSION = 0.1.0-SNAPSHOT
 
 all: build/mullion
