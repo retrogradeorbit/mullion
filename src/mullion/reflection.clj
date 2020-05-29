@@ -37,7 +37,14 @@
    'org.bytedeco.javacpp.tools.Generator$IntEnum {:conf #{:all}
                                                   :fields #{'value}}
    'org.bytedeco.javacpp.tools.Generator$LongEnum {:conf #{:all}
-                                                   :fields #{'value}}})
+                                                   :fields #{'value}}
+   'org.bytedeco.qt.Qt5Widgets.QWidget {:methods
+                                        {'closeEvent ['org.bytedeco.qt.Qt5Gui.QCloseEvent]}
+                                        }
+
+   }
+
+  )
 
 (def svm-reflection
   {'org.bytedeco.javacpp.presets.javacpp {:conf #{:all}}
@@ -133,9 +140,9 @@
 (defn make-reflection-json [reflection-config]
   (let [config
         (->> reflection-config
-             (map (fn [[sym {:keys [conf fields]}]]
+             (map (fn [[sym {:keys [conf fields methods]}]]
                     (let [struct {"name" (name sym)}
-                          struct (if (conf :all)
+                          struct (if (:all conf)
                                    (assoc struct
                                           "allPublicMethods" true
                                           "allPublicConstructors" true
@@ -152,6 +159,14 @@
                                                 (for [field fields]
                                                   {"name" (name field)
                                                    "allowWrite" true})))
+                                   struct)
+                          struct (if methods
+                                   (assoc struct
+                                          "methods"
+                                          (into []
+                                                (for [[method params] methods]
+                                                  {"name" (name method)
+                                                   "parameterTypes" (mapv name params)})))
                                    struct)]
                       struct))))]
     (cheshire/generate-string config {:pretty true})))
