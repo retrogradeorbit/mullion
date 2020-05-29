@@ -206,16 +206,42 @@
             ;;(println "symlinking" (path-join libs-dir linkname) "to" filename)
             (symlink (path-join libs-dir linkname) filename)))))))
 
+(defn get-lib-dir []
+  (let [home-dir (System/getenv "HOME")
+        config-dir (path-join home-dir config-dir)]
+    (path-join config-dir "libs")))
+
 (defn init! []
   (let [native-image?
         (and (= "Substrate VM" (System/getProperty "java.vm.name"))
              (= "runtime" (System/getProperty "org.graalvm.nativeimage.imagecode")))
-        home-dir (System/getenv "HOME")
-        config-dir (path-join home-dir config-dir)
-        libs-dir (path-join config-dir "libs")]
+        libs-dir (get-lib-dir)]
     (.mkdirs (io/as-file libs-dir))
 
     (when native-image?
       (setup libs-dir)
       ;;(println "setting java.library.path to:" libs-dir)
       (System/setProperty "java.library.path" libs-dir))))
+
+(defn debug-load []
+  (println "resources")
+  (println "=========")
+  (doseq [res-file (->> resource-libs
+                        (map second)
+                        (map (fn [{:keys [path names]}]
+                               (for [n names]
+                                 (make-lib-resource-path path n))))
+                        (flatten))]
+    (prn res-file (io/resource res-file)))
+  (println)
+
+  (doseq [name library-load-list]
+    (println "loading:" name)
+    (clojure.lang.RT/loadLibrary name))
+
+  (println)
+  (println "done"))
+
+(defn load-libs []
+  (doseq [name library-load-list]
+    (clojure.lang.RT/loadLibrary name)))
