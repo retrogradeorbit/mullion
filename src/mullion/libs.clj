@@ -172,20 +172,21 @@
   [libs-dir]
   (doseq [{:keys [filename
                   linkname
-                  resource-file]} (->> resource-libs
-                                  (map second)
-                                  (map (fn [{:keys [path names]}]
-                                         (for [n names]
-                                           (let [resource-file (make-lib-resource-path path n)
-                                                 link-name (make-lib-link-name n)
-                                                 filename (make-lib-file-name n)]
-                                             (if (not= link-name filename)
-                                               {:resource-file resource-file
-                                                :filename filename
-                                                :linkname link-name}
-                                               {:resource-file resource-file
-                                                :filename filename})))))
-                                  (flatten))]
+                  resource-file]}
+          (->> resource-libs
+               (map second)
+               (map (fn [{:keys [path names]}]
+                      (for [n names]
+                        (let [resource-file (make-lib-resource-path path n)
+                              link-name (make-lib-link-name n)
+                              filename (make-lib-file-name n)]
+                          (if (not= link-name filename)
+                            {:resource-file resource-file
+                             :filename filename
+                             :linkname link-name}
+                            {:resource-file resource-file
+                             :filename filename})))))
+               (flatten))]
     (when-let [file (io/resource resource-file)]
       ;; write out the filename if needed
       (let [[_ name] (path-split (.getFile file))
@@ -197,13 +198,13 @@
         ;; only write if filesize is different or it doesnt exist
         (when (or (not (.exists (io/file dest-path)))
                   (not= (.length (io/file dest-path)) resource-size))
-          (println "writing" resource-size "bytes to" dest-path)
-          (io/copy (io/input-stream file) (io/file dest-path))))
+          ;;(println "writing" resource-size "bytes to" dest-path)
+          (io/copy (io/input-stream file) (io/file dest-path))
 
-      ;; if a symlink is needed, make it
-      (when linkname
-        (println "symlinking" (path-join libs-dir linkname) "to" filename)
-        (symlink (path-join libs-dir linkname) filename)))))
+          ;; if a symlink is needed, make it
+          (when linkname
+            ;;(println "symlinking" (path-join libs-dir linkname) "to" filename)
+            (symlink (path-join libs-dir linkname) filename)))))))
 
 (defn init! []
   (let [native-image?
