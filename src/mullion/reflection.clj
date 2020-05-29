@@ -153,10 +153,12 @@
 
 (defonce _write-svm-reflection
   (when-not (System/getProperty "org.graalvm.nativeimage.imagecode")
-    (spit "graal-configs/reflect-config.json"
-          (make-reflection-json svm-reflection))))
+    (when (.isDirectory (io/file "graal-configs"))
+      (spit "graal-configs/reflect-config.json"
+            (make-reflection-json svm-reflection)))))
 
 (defonce _write-jni-reflection
   (when-not (System/getProperty "org.graalvm.nativeimage.imagecode")
-    (spit "graal-configs/jni-config.json"
-          (make-reflection-json jni-reflection))))
+    (when (.isDirectory (io/file "graal-configs"))
+      (spit "graal-configs/jni-config.json"
+            (make-reflection-json jni-reflection)))))

@@ -111,7 +111,8 @@
 
 (defonce _write-resources
   (when-not (System/getProperty "org.graalvm.nativeimage.imagecode")
-    (write-resources-config-hashmap "graal-configs/resource-config.json")))
+    (when (.isDirectory (io/file "graal-configs"))
+      (write-resources-config-hashmap "graal-configs/resource-config.json"))))
 
 (def library-load-list
   (->> resource-libs
