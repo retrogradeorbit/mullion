@@ -42,7 +42,7 @@ run: all
 	build/mullion
 
 test-bin: all
-	build/mullion
+	build/mullion --test-load
 
 package-linux: all
 	-rm -rf build/linux-package
