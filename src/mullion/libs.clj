@@ -174,7 +174,6 @@
                   linkname
                   resource-file]}
           (->> resource-libs
-               (map second)
                (map (fn [{:keys [path names]}]
                       (for [n names]
                         (let [resource-file (make-lib-resource-path path n)
