@@ -217,5 +217,5 @@
 
     (when native-image?
       (setup libs-dir)
-      (println "setting java.library.path to:" libs-dir)
+      ;;(println "setting java.library.path to:" libs-dir)
       (System/setProperty "java.library.path" libs-dir))))
