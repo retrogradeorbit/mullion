@@ -27,7 +27,8 @@
                 "-platformpluginpath"
                 lib-dir])
               ))
-        text-edit (QTextEdit.)]
+        text-edit (proxy [QTextEdit] []
+                    (closeEvent [ev] (println "close!" ev)))]
     (.show text-edit)
     (System/exit (QApplication/exec))
 
