@@ -1,7 +1,8 @@
 (ns mullion.core
   (:require [mullion.libs :as libs]
             [mullion.reflection])
-  (:import [org.bytedeco.qt.Qt5Widgets QApplication QTextEdit]
+  (:import [org.bytedeco.qt.Qt5Widgets QApplication QTextEdit QPushButton QVBoxLayout QWidget]
+           [org.bytedeco.qt.Qt5Core QString]
            [org.bytedeco.javacpp PointerPointer IntPointer])
   (:gen-class))
 
@@ -28,8 +29,15 @@
                 lib-dir])
               ))
         text-edit (proxy [QTextEdit] []
-                    (closeEvent [ev] (println "close!" ev)))]
-    (.show text-edit)
+                    (closeEvent [ev] (println "close!" ev)))
+        quit-button (QPushButton. (QString/fromUtf8 "&Quit") )
+        layout (QVBoxLayout.)
+        window (QWidget.)
+        ]
+    (.addWidget layout text-edit)
+    (.addWidget layout quit-button)
+    (.setLayout window layout)
+    (.show window)
     (System/exit (QApplication/exec))
 
     )
