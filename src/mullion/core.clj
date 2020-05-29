@@ -1,5 +1,6 @@
 (ns mullion.core
-  (:require [mullion.libs])
+  (:require [mullion.libs]
+            [mullion.reflection])
   (:gen-class))
 
 (set! *warn-on-reflection* true)
