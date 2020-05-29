@@ -17,7 +17,7 @@ target/uberjar/mullion-$(VERSION)-standalone.jar: $(SRC)
 analyse:
 	$(GRAALVM_HOME)/bin/java -agentlib:native-image-agent=config-output-dir=config-dir \
 		-Dorg.bytedeco.javacpp.logger.debug=true \
-		-Djava.library.path=./ \
+		-Djava.library.path=$$HOME/.mullion/libs/ \
 		-jar target/uberjar/mullion-$(VERSION)-standalone.jar
 
 build/mullion: target/uberjar/mullion-$(VERSION)-standalone.jar
