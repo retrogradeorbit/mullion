@@ -11,6 +11,11 @@
   "I don't do a whole lot ... yet."
   [& args]
   (libs/init!)
+
+  (when (= args '("--test-load"))
+    (libs/debug-load)
+    (System/exit 0))
+
   (libs/load-libs)
   (let [lib-dir (libs/get-lib-dir)
         app (QApplication.
