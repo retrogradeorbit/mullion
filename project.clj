@@ -9,10 +9,11 @@
   :main ^:skip-aot mullion.core
   :java-source-paths ["src/java"]
   :jvm-opts [#=(str "-Djava.library.path=" #= (java.lang.System/getenv "HOME") "/.mullion/libs")
-             "-Dorg.bytedeco.javacpp.logger.debug=true"]
+             ;;"-Dorg.bytedeco.javacpp.logger.debug=true"
+             ]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"
                                   ;;"-Dorg.bytedeco.javacpp.logger.debug=true"
-                                  "-Djava.library.path=./"]
+                                  #=(str "-Djava.library.path=" #= (java.lang.System/getenv "HOME") "/.mullion/libs")]
                        }})

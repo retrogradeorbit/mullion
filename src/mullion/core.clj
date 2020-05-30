@@ -1,8 +1,10 @@
 (ns mullion.core
   (:require [mullion.libs :as libs]
             [mullion.reflection])
-  (:import [org.bytedeco.qt.Qt5Widgets QApplication QTextEdit QPushButton QVBoxLayout QWidget]
-           [org.bytedeco.qt.Qt5Core QString]
+  (:import [org.bytedeco.qt.Qt5Widgets
+            QApplication QTextEdit QPushButton QVBoxLayout QWidget]
+           [org.bytedeco.qt.helper Qt5Widgets Qt5Widgets$ClickedCallback]
+           [org.bytedeco.qt.Qt5Core QString QObject]
            [org.bytedeco.javacpp PointerPointer IntPointer])
   (:gen-class))
 
@@ -34,6 +36,15 @@
         layout (QVBoxLayout.)
         window (QWidget.)
         ]
+    (Qt5Widgets/QAbstractButton_clicked
+     quit-button (QObject.)
+     (proxy [Qt5Widgets$ClickedCallback] []
+       (clicked [b]
+         (println "quit clicked" b)
+         (QApplication/quit))
+       )
+     0)
+
     (.addWidget layout text-edit)
     (.addWidget layout quit-button)
     (.setLayout window layout)

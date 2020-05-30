@@ -41,6 +41,7 @@
    'org.bytedeco.qt.Qt5Widgets.QWidget {:methods
                                         {'closeEvent ['org.bytedeco.qt.Qt5Gui.QCloseEvent]}
                                         }
+   'org.bytedeco.qt.helper.Qt5Widgets$ClickedCallback {:methods {'call ['int 'boolean]}}
 
    }
 
