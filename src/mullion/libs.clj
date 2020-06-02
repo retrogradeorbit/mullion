@@ -242,8 +242,9 @@
       (Paths/get target empty-string-array)
       empty-file-attribute-array))))
 
-(defn write-resource-bin-to-path [resource dest-path]
-  (let [[_ name] (path-split (.getFile resource))
+(defn write-resource-bin-to-path [resource-file dest-path]
+  (let [resource (io/resource resource-file)
+        [_ name] (path-split (.getFile resource))
         dest-path (path-join dest-path name)
         resource-size (with-open [out (java.io.ByteArrayOutputStream.)]
                         (io/copy (io/input-stream resource) out)
