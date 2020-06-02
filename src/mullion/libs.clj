@@ -312,6 +312,16 @@
       ;;(println "setting java.library.path to:" libs-dir)
       (System/setProperty "java.library.path" libs-dir))))
 
+(defn write-resource-to-windows-path [resource-file [dest-path & remaining-paths]]
+  (try
+    (println "writing" resource-file "to" dest-path)
+    (write-resource-bin-to-path resource-file dest-path)
+    (println "success!")
+    (catch java.io.FileNotFoundException _
+      (println "failed!")
+      (when remaining-paths
+        (write-resource-to-windows-path resource-file remaining-paths)))))
+
 (defn windows-init!
   "windows exe links with two dlls via the system linker, not the java loader.
   vcruntime140.dll
@@ -320,8 +330,10 @@
   "
   []
   (when windows?
-    (write-resource-bin-to-path "windows-x86_64/msvcp140_1.dll" "c:/windows/System32")
-    (write-resource-bin-to-path "org/bytedeco/javacpp/windows-x86_64/vcruntime140.dll" "c:/windows/System32")))
+    (write-resource-to-windows-path "windows-x86_64/msvcp140_1.dll"
+                                    ["c:/windows/System32" "./"])
+    (write-resource-to-windows-path "org/bytedeco/javacpp/windows-x86_64/vcruntime140.dll"
+                                    ["c:/windows/System32" "./"])))
 
 (defn debug-load []
   (println "resources")
