@@ -13,6 +13,8 @@ set /P MULLION_VERSION=< .meta\VERSION
 
 echo Building mullion %MULLION_VERSION%
 
+mkdir graal-configs
+
 call lein do clean, uberjar
 if %errorlevel% neq 0 exit /b %errorlevel%
 
