@@ -104,7 +104,18 @@
        "Qt5Core@.5" "Qt5DBus@.5" "Qt5Gui@.5" "Qt5Widgets@.5" "Qt5PrintSupport@.5"
        "jniQt5Core" "jniQt5Widgets" "qdirect2d" "qwindows" "qwindowsvistastyle"
        "windowsprintersupport" "qxdgdesktopportal" "qminimal" "qoffscreen"
-       "qgif" "qico" "qjpeg" "jniQt5Gui"])}])
+       "qgif" "qico" "qjpeg" "jniQt5Gui"])}
+
+   {:path ""
+    :names
+    (cond
+      windows?
+      ["msvcp140_1"]
+
+      :else
+      []
+      )}
+   ])
 
 (defn make-lib-resource-path [path name]
   (let [[lib suffix] (string/split name #"@")]
