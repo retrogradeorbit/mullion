@@ -23,6 +23,7 @@
    'org.bytedeco.javacpp.SizeTPointer {:conf #{:all}}
    'java.lang.UnsatisfiedLinkError {:conf #{:all}}
    'java.lang.String {:conf #{:all}}
+   'java.lang.Object {:conf #{:all}}
    'java.lang.NullPointerException {:conf #{:all}}
    'org.bytedeco.javacpp.Pointer$NativeDeallocator {:conf #{:all}
                                                     :fields #{'ownerAddress}}
@@ -38,6 +39,7 @@
                                                   :fields #{'value}}
    'org.bytedeco.javacpp.tools.Generator$LongEnum {:conf #{:all}
                                                    :fields #{'value}}
+   'org.bytedeco.qt.Qt5Core.FromBase64Result {:conf #{:all}}
    'org.bytedeco.qt.Qt5Widgets.QWidget {:methods
                                         {'closeEvent ['org.bytedeco.qt.Qt5Gui.QCloseEvent]}
                                         }
@@ -68,13 +70,16 @@
    'org.bytedeco.javacpp.SizeTPointer {:conf #{:all}}
    'java.lang.UnsatisfiedLinkError {:conf #{:all}}
    'java.lang.String {:conf #{:all}}
+   'java.lang.Object {:conf #{:all}}
    'org.bytedeco.javacpp.Pointer$NativeDeallocator {:conf #{:all}
                                                     :fields #{'ownerAddress}}
    'java.nio.Buffer {:conf #{:all}
                      :fields #{'ownerAddress 'position 'limit 'capacity}}
    'java.lang.NullPointerException {:conf #{:all}}
+   'java.lang.ClassNotFoundException {:conf #{:all}}
    'org.bytedeco.qt.Qt5Core.QAbstractEventDispatcher$TimerInfo {:conf #{:all}}
    'java.lang.RuntimeException {:conf #{:all}}
+   'org.bytedeco.qt.Qt5Core.FromBase64Result {:conf #{:all}}
    'org.bytedeco.qt.Qt5Core.QAbstractEventDispatcher {:conf #{:all}}
    'org.bytedeco.qt.Qt5Core.QByteArray {:conf #{:all}}
    'org.bytedeco.qt.Qt5Core.QObject {:conf #{:all}}
