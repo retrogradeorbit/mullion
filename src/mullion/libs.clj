@@ -253,7 +253,7 @@
     (when (or (not (.exists (io/file dest-path)))
               (not= (.length (io/file dest-path)) resource-size))
       ;;(println "writing" resource-size "bytes to" dest-path)
-      (io/copy (io/input-stream file) (io/file dest-path)))))
+      (io/copy (io/input-stream resource) (io/file dest-path)))))
 
 (defn setup
   "Copy any of the bundled dynamic libs from resources to the
