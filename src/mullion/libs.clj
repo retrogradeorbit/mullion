@@ -28,8 +28,6 @@
 (def macos? (string/starts-with? property-platform "macos"))
 (def windows? (string/starts-with? property-platform "windows"))
 
-(assert (not windows?) "Windows platform not supported.")
-
 (def resource-libs
   [
    {:path "org/bytedeco/javacpp/"
