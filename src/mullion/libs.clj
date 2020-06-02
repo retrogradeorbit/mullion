@@ -74,7 +74,6 @@
        "ucrtbase"
        "vcruntime140"
        "msvcp140"
-       "msvcp140_1"
        "concrt140"
        "vcomp140"
        "jnijavacpp"]
