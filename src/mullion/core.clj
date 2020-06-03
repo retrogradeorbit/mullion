@@ -14,7 +14,7 @@
   "I don't do a whole lot ... yet."
   [& args]
   (prn "Launch args:" args)
-  (libs/windows-init!)
+  ;;(libs/windows-init!)
   (libs/init!)
 
   (when (= args '("--test-load"))
