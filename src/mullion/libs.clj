@@ -244,20 +244,6 @@
       (Paths/get target empty-string-array)
       empty-file-attribute-array))))
 
-(defn write-resource-bin-to-path [resource-file dest-path]
-  (let [resource (io/resource resource-file)
-        [_ name] (path-split (.getFile resource))
-        dest-path (path-join dest-path name)
-        resource-size (with-open [out (java.io.ByteArrayOutputStream.)]
-                        (io/copy (io/input-stream resource) out)
-                        (count (.toByteArray out)))]
-    ;; writing to a library while running its code can result in segfault
-    ;; only write if filesize is different or it doesnt exist
-    (when (or (not (.exists (io/file dest-path)))
-              (not= (.length (io/file dest-path)) resource-size))
-      ;;(println "writing" resource-size "bytes to" dest-path)
-      (io/copy (io/input-stream resource) (io/file dest-path)))))
-
 (defn setup
   "Copy any of the bundled dynamic libs from resources to the
   run time lib directory"
@@ -313,29 +299,6 @@
       (setup libs-dir)
       ;;(println "setting java.library.path to:" libs-dir)
       (System/setProperty "java.library.path" libs-dir))))
-
-(defn write-resource-to-windows-path [resource-file [dest-path & remaining-paths]]
-  (try
-    (println "writing" resource-file "to" dest-path)
-    (write-resource-bin-to-path resource-file dest-path)
-    (println "success!")
-    (catch java.io.FileNotFoundException _
-      (println "failed!")
-      (when remaining-paths
-        (write-resource-to-windows-path resource-file remaining-paths)))))
-
-(defn windows-init!
-  "windows exe links with two dlls via the system linker, not the java loader.
-  vcruntime140.dll
-  msvcp140_1.dll
-  These need to be written into the dll search path
-  "
-  []
-  (when windows?
-    (write-resource-to-windows-path "windows-x86_64/msvcp140_1.dll"
-                                    ["c:/windows/System32" "./"])
-    (write-resource-to-windows-path "org/bytedeco/javacpp/windows-x86_64/vcruntime140.dll"
-                                    ["c:/windows/System32" "./"])))
 
 (defn debug-load []
   (println "resources")
