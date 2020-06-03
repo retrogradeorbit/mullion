@@ -30,6 +30,16 @@
 
 (def resource-libs
   [
+   {:path ""
+    :names
+    (cond
+      windows?
+      ["msvcp140_1"]
+
+      :else
+      []
+      )}
+
    {:path "org/bytedeco/javacpp/"
     :names
     (cond
@@ -106,15 +116,7 @@
        "windowsprintersupport" "qxdgdesktopportal" "qminimal" "qoffscreen"
        "qgif" "qico" "qjpeg" "jniQt5Gui"])}
 
-   {:path ""
-    :names
-    (cond
-      windows?
-      ["msvcp140_1"]
 
-      :else
-      []
-      )}
    ])
 
 (defn make-lib-resource-path [path name]
