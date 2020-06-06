@@ -1,7 +1,9 @@
 (ns mullion.core
   (:require [mullion.libs :as libs]
             [mullion.reflection]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [puget.printer :as puget]
+            )
   (:import [org.bytedeco.qt.Qt5Widgets
             QApplication QTextEdit QPushButton QVBoxLayout QHBoxLayout QWidget QLabel]
            [org.bytedeco.qt.helper
@@ -209,6 +211,9 @@
                (.setText (get-widget :time)))
           (recur (inc c)))
         )
+
+      (puget/cprint window)
+
       (System/exit (QApplication/exec)))
 
     )
