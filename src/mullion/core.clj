@@ -190,20 +190,20 @@
     (let [window (make-widgets
                   [:widget
                    [:v-box-layout
-                    [:label "0 seconds"]
-                    [:label "another"]
-                    [:text-edit
-                     {:on-change (fn [ev] (println ev))}
-                     ]
-                    [:widget
-                     [:h-box-layout
-                      [:push-button
-                       {:on-click (fn [ev] (QApplication/quit))}
-                       "&Quit"]]]]]
+                    [:label#time "0 seconds"]
+                    [:push-button
+                     {:on-click (fn [ev] (QApplication/quit))}
+                     "&Quit"]]]
 
                   #_[:widget {}
                      [:v-box-layout {}]])]
       (.show window)
+      (future
+        (loop [c 1]
+          (Thread/sleep 1000)
+          (.setText (:time @id-registry) (QString/fromUtf8 (format "%d seconds" c)))
+          (recur (inc c)))
+        )
       (System/exit (QApplication/exec)))
 
     )
