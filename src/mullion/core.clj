@@ -3,7 +3,10 @@
             [mullion.reflection])
   (:import [org.bytedeco.qt.Qt5Widgets
             QApplication QTextEdit QPushButton QVBoxLayout QHBoxLayout QWidget QLabel]
-           [org.bytedeco.qt.helper Qt5Widgets Qt5Widgets$ClickedCallback]
+           [org.bytedeco.qt.helper
+            Qt5Widgets
+            Qt5Widgets$ClickedCallback
+            Qt5Widgets$TriggeredCallback]
            [org.bytedeco.qt.Qt5Core QString QObject]
            [org.bytedeco.javacpp PointerPointer IntPointer])
   (:gen-class))
@@ -38,7 +41,15 @@
                      (doseq [child children]
                        (.addWidget w child))
                      w))
-   :text-edit QTextEdit
+   :text-edit (fn [{:keys [on-change]} & remain]
+                (let [w (proxy [QTextEdit] []
+                          (event [ev]
+                            (println "Event:" ev))
+                          (changeEvent [ev]
+                            (println "changeEvent:" ev)
+                            )
+                          )]
+                  w))
    :push-button (fn [{:keys [on-click]} ^String text]
                   (let [w (QPushButton. ^QString (QString/fromUtf8 text))]
                     (when on-click
@@ -160,6 +171,9 @@
                    [:v-box-layout
                     [:label "0 seconds"]
                     [:label "another"]
+                    [:text-edit
+                     {:on-change (fn [ev] (println ev))}
+                     ]
                     [:widget
                      [:h-box-layout
                       [:push-button
