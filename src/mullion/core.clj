@@ -72,6 +72,9 @@
   (let [s (name kw)
         [base ident] (string/split s #"#" 2)]
     [(keyword base) (when ident (keyword ident))]))
+
+(defonce id-registry (atom {}))
+
 (defn make-widgets [markup]
   (let [[t & r] markup
         opts (if (map? (first r))
@@ -87,9 +90,16 @@
         [kw ident] (parse-keyword t)
         con (get-constructor kw)
         ]
-    (prn t '=> con opts children)
-    (println)
-    (apply con opts children)))
+    (comment
+      (prn 'kw kw 'ident ident)
+      (prn t '=> con opts children)
+      (println))
+
+    (let [w (apply con opts children)]
+      (when ident
+        (swap! id-registry assoc ident w))
+      w)))
+
 
 
 #_ (defn -main
