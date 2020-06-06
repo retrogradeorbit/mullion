@@ -39,8 +39,16 @@
                        (.addWidget w child))
                      w))
    :text-edit QTextEdit
-   :push-button (fn [opts ^String text]
+   :push-button (fn [{:keys [on-click]} ^String text]
                   (let [w (QPushButton. ^QString (QString/fromUtf8 text))]
+                    (when on-click
+                      (Qt5Widgets/QAbstractButton_clicked
+                       w
+                       (QObject.)
+                       (proxy [Qt5Widgets$ClickedCallback] []
+                         (clicked [ev]
+                           (on-click ev)))
+                       0))
                     w))})
 
 (defn make-widgets [markup]
