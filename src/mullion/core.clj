@@ -75,6 +75,9 @@
 
 (defonce id-registry (atom {}))
 
+(defn get-widget [ident]
+  (get @id-registry ident))
+
 (defn make-widgets [markup]
   (let [[t & r] markup
         opts (if (map? (first r))
@@ -201,7 +204,10 @@
       (future
         (loop [c 1]
           (Thread/sleep 1000)
-          (.setText (:time @id-registry) (QString/fromUtf8 (format "%d seconds" c)))
+          (->> c
+               (format "%d seconds")
+               QString/fromUtf8
+               (.setText (get-widget :time)))
           (recur (inc c)))
         )
       (System/exit (QApplication/exec)))
