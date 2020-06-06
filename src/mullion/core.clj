@@ -1,6 +1,7 @@
 (ns mullion.core
   (:require [mullion.libs :as libs]
-            [mullion.reflection])
+            [mullion.reflection]
+            [clojure.string :as string])
   (:import [org.bytedeco.qt.Qt5Widgets
             QApplication QTextEdit QPushButton QVBoxLayout QHBoxLayout QWidget QLabel]
            [org.bytedeco.qt.helper
@@ -62,6 +63,15 @@
                        0))
                     w))})
 
+(defn get-constructor [t]
+  (types t))
+
+(defn parse-keyword
+  "parse a keyword and split off an id string if one is present"
+  [kw]
+  (let [s (name kw)
+        [base ident] (string/split s #"#" 2)]
+    [(keyword base) (when ident (keyword ident))]))
 (defn make-widgets [markup]
   (let [[t & r] markup
         opts (if (map? (first r))
@@ -74,7 +84,8 @@
                    (if (vector? (first remain))
                      (mapv make-widgets remain)
                      remain))
-        con (types t)
+        [kw ident] (parse-keyword t)
+        con (get-constructor kw)
         ]
     (prn t '=> con opts children)
     (println)
