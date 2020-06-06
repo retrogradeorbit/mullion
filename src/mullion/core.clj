@@ -86,22 +86,21 @@
         remain (if (map? (first r))
                  (rest r)
                  r)
-        children (when remain
-                   (if (vector? (first remain))
-                     (mapv make-widgets remain)
-                     remain))
+        children? (and remain (vector? (first remain)))
+        children (when children? (mapv make-widgets remain))
         [kw ident] (parse-keyword t)
         con (get-constructor kw)
         ]
-    (comment
-      (prn 'kw kw 'ident ident)
-      (prn t '=> con opts children)
-      (println))
+    (comment)
+    (prn 'kw kw 'ident ident)
+    (prn t '=> con opts children)
+    (println)
 
-    (let [w (apply con opts children)]
+    (let [w (apply con opts (if children? (map :widget children) remain))]
       (when ident
         (swap! id-registry assoc ident w))
-      w)))
+      {:widget w
+       :children children})))
 
 
 
@@ -200,7 +199,7 @@
 
                   #_[:widget {}
                      [:v-box-layout {}]])]
-      (.show window)
+      (.show (:widget window))
       (future
         (loop [c 1]
           (Thread/sleep 1000)
