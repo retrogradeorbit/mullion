@@ -162,8 +162,9 @@
                     [:label "another"]
                     [:widget
                      [:h-box-layout
-                      [:push-button "&Ok"]
-                      [:push-button "&Quit"]]]]]
+                      [:push-button
+                       {:on-click (fn [ev] (QApplication/quit))}
+                       "&Quit"]]]]]
 
                   #_[:widget {}
                      [:v-box-layout {}]])]
