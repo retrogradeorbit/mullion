@@ -148,61 +148,58 @@
     (System/exit 0))
 
   (libs/load-libs)
-  (let [lib-dir (libs/get-lib-dir)
-        app (QApplication.
-             (IntPointer. (int-array [3]))
-             (PointerPointer.
-              (into-array
-               String
-               ["gettingstarted"
-                "-platformpluginpath"
-                lib-dir])
-              ))
-        ;;label (QLabel. (QString/fromUtf8 "0 seconds"))
-        ;;quit-button (QPushButton. (QString/fromUtf8 "&Quit") )
-        ;;layout (QVBoxLayout.)
-        ;;window (QWidget.)
-        ]
-    #_(Qt5Widgets/QAbstractButton_clicked
-       quit-button (QObject.)
-       (proxy [Qt5Widgets$ClickedCallback] []
-         (clicked [b]
-           (println "quit clicked" b)
-           (QApplication/quit))
-         )
-       0)
+  (let [app (make-app)]
+    (prn "App" app)
+    ;;(Thread/sleep 3000)
+    (let [{:keys [widget] :as window}
+          (make-widgets
+           [:widget
+            [:v-box-layout
+             [:label#time "0 seconds"]
+             ;;[:text-edit {:on-change #(println "change")}]
+             [:push-button
+              {:on-click quit-app} "&Quit"]]]
 
-    ;;(.addWidget layout label)
-    ;;(.addWidget layout quit-button)
-    ;;(.setLayout window layout)
-    ;;(.show window)
+           #_[:widget {}
+              [:v-box-layout {}]])]
 
-    ;;(prn (QWidget.))
-    ;;(prn (new QWidget))
-    (let [window (make-widgets
-                  [:widget
-                   [:v-box-layout
-                    [:label#time "0 seconds"]
-                    [:push-button
-                     {:on-click (fn [ev] (QApplication/quit))}
-                     "&Quit"]]]
+      ;;(puget/cprint window)
+      (.show ^QWidget widget)
 
-                  #_[:widget {}
-                     [:v-box-layout {}]])]
-      (.show (:widget window))
-      (future
+      ;; keep getting one of the following
+
+      ;; - QWidget: Must construct a QApplication before a QWidget
+
+      ;; - A fatal error has been detected by the Java Runtime Environment:SIGSEGV
+
+      ;; # Problematic frame:
+      ;; # C  [libQt5Widgets.so.5+0x19c075]  QWidget::show()+0x15
+
+      ;; # Problematic frame:
+      ;; # C  0x0000000000000000
+
+      ;; - QPixmap: Must construct a QGuiApplication before a QPixmap
+
+      ;; - QApplication::exec: Please instantiate the QApplication object first
+
+      ;; ... and sometimes it runs fine :shrug:
+      #_ (future
         (loop [c 1]
           (Thread/sleep 1000)
           (->> c
                (format "%d seconds")
                QString/fromUtf8
                (.setText (get-widget :time)))
-          (recur (inc c)))
-        )
+          (recur (inc c))))
 
-      (puget/cprint window)
+
+      #_(puget/cprint window)
+
+      #_(.show (:widget window))
 
       (System/exit (QApplication/exec)))
+
+
 
     )
   )
