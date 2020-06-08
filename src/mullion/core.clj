@@ -55,12 +55,12 @@
                             )
                           )]
                   w))
-   :push-button (fn [{:keys [on-click]} ^String text]
+   :push-button (fn [{:keys [on-click receiver]} ^String text]
                   (let [w (QPushButton. ^QString (QString/fromUtf8 text))]
                     (when on-click
                       (Qt5Widgets/QAbstractButton_clicked
                        w
-                       (QObject.)
+                       receiver
                        (proxy [Qt5Widgets$ClickedCallback] []
                          (clicked [ev]
                            (on-click ev)))
@@ -125,18 +125,19 @@
 
 (defn make-app []
   (QApplication.
-             (IntPointer. (int-array [3]))
-             (PointerPointer.
-              ^"[Ljava.lang.String;"
-              (into-array
-               String
-               ["gettingstarted"
-                "-platformpluginpath"
-                (libs/get-lib-dir)])
-              )))
+   (IntPointer. (int-array [3]))
+   (PointerPointer.
+    ^"[Ljava.lang.String;"
+    (into-array
+     String
+     ["gettingstarted"
+      "-platformpluginpath"
+      (libs/get-lib-dir)])
+    )))
 
 (defn quit-app [_]
-  (QApplication/quit))
+  (QApplication/quit)
+  )
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -148,23 +149,29 @@
     (System/exit 0))
 
   (libs/load-libs)
-  (let [app (make-app)]
+  (let [app (make-app)
+        qobj (QObject.)
+        ]
     (prn "App" app)
+    (prn 'obj qobj)
     ;;(Thread/sleep 3000)
-    (let [{:keys [widget] :as window}
-          (make-widgets
-           [:widget
-            [:v-box-layout
-             [:label#time "0 seconds"]
-             ;;[:text-edit {:on-change #(println "change")}]
-             [:push-button
-              {:on-click quit-app} "&Quit"]]]
+    (let [window (QWidget.)
+          tree (make-widgets
+                [:v-box-layout
+                 [:label#time "0 seconds"]
+                 ;;[:text-edit {:on-change #(println "change")}]
+                 [:push-button
+                  {:on-click quit-app
+                   :receiver window} "&Quit"]
+                 #_[:push-button {:on-click quit-app} "&Quit 2"]]
 
-           #_[:widget {}
-              [:v-box-layout {}]])]
+                #_[:widget {}
+                   [:v-box-layout {}]])]
+
+      (.setLayout window (:widget tree))
 
       ;;(puget/cprint window)
-      (.show ^QWidget widget)
+      (.show ^QWidget window)
 
       ;; keep getting one of the following
 
@@ -184,22 +191,29 @@
 
       ;; ... and sometimes it runs fine :shrug:
       #_ (future
-        (loop [c 1]
-          (Thread/sleep 1000)
-          (->> c
-               (format "%d seconds")
-               QString/fromUtf8
-               (.setText (get-widget :time)))
-          (recur (inc c))))
+           (loop [c 1]
+             (Thread/sleep 1000)
+             (->> c
+                  (format "%d seconds")
+                  QString/fromUtf8
+                  (.setText (get-widget :time)))
+             (recur (inc c))))
 
 
       #_(puget/cprint window)
 
       #_(.show (:widget window))
 
-      (System/exit (QApplication/exec)))
+      #_ (future
+           (Thread/sleep 1000)
+           (quit-app true)
+           )
 
 
+      (System/exit (QApplication/exec)
+                     )
 
-    )
+      ))
+
+  #_ (QApplication/exec)
   )
