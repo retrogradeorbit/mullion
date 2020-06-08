@@ -295,8 +295,10 @@
         libs-dir (get-lib-dir)]
     (.mkdirs (io/as-file libs-dir))
 
+    (setup libs-dir)
+
     (when native-image?
-      (setup libs-dir)
+      ;;(setup libs-dir)
       ;;(println "setting java.library.path to:" libs-dir)
       (System/setProperty "java.library.path" libs-dir))))
 
