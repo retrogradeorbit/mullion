@@ -17,6 +17,8 @@
 
 (set! *warn-on-reflection* true)
 
+(def lock (Object.))
+
 (def types
   { ;;:window QWindow
    :widget (fn [opts layout]
@@ -121,8 +123,6 @@
 ;;     )
 ;;   )
 
-0
-
 (defn make-app []
   (QApplication.
    (IntPointer. (int-array [3]))
@@ -168,10 +168,12 @@
                 #_[:widget {}
                    [:v-box-layout {}]])]
 
-      (.setLayout window (:widget tree))
-
       ;;(puget/cprint window)
-      (.show ^QWidget window)
+
+
+      (locking lock
+        (.setLayout window (:widget tree))
+        (.show ^QWidget window))
 
       ;; keep getting one of the following
 
@@ -189,14 +191,21 @@
 
       ;; - QApplication::exec: Please instantiate the QApplication object first
 
+      ;;      (process:18699): GLib-CRITICAL **: 01:11:53.628: g_main_context_pop_thread_default: assertion 'stack != NULL' failed
+      ;; QGuiApplication::font(): no QGuiApplication instance and no application font set.
+      ;; QGuiApplication::font(): no QGuiApplication instance and no application font set.
+      ;; QGuiApplication::font(): no QGuiApplication instance and no application font set.
+      ;; QGuiApplication::font(): no QGuiApplication instance and no application font set.
+
       ;; ... and sometimes it runs fine :shrug:
-      #_ (future
+      (future
            (loop [c 1]
              (Thread/sleep 1000)
-             (->> c
-                  (format "%d seconds")
-                  QString/fromUtf8
-                  (.setText (get-widget :time)))
+             (locking lock
+               (->> c
+                    (format "%d seconds")
+                    QString/fromUtf8
+                    (.setText (get-widget :time))))
              (recur (inc c))))
 
 
