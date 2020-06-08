@@ -98,8 +98,8 @@
       [
        "Qt5DBus@.5" "Qt5Gui@.5" "Qt5XcbQpa@.5" "Qt5Widgets@.5" "Qt5PrintSupport@.5"
        "Qt5Core@.5" "jniQt5Core" "jniQt5Widgets" "qxdgdesktopportal" "qxcb"
-       "qlinuxfb" "qminimalegl" "qminimal" "qoffscreen" "composeplatforminputcontextplugin"
-       "ibusplatforminputcontextplugin" "qxcb-egl-integration" "qxcb-glx-integration"
+       "qlinuxfb" #_ "qminimalegl" "qminimal" "qoffscreen" "composeplatforminputcontextplugin"
+       "ibusplatforminputcontextplugin" #_ "qxcb-egl-integration" "qxcb-glx-integration"
        "qgif" "qico" "qjpeg" "qevdevkeyboardplugin" "qevdevmouseplugin" "qevdevtabletplugin"
        "qevdevtouchplugin" "jniQt5Gui"]
 
