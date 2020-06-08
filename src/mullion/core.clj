@@ -16,15 +16,6 @@
 
 (set! *warn-on-reflection* true)
 
-(def layout [:window
-             [:v-box-layout
-              [:text-edit {:on-close (fn [ev]
-                                       (println "close!" ev))}]
-              [:push-button {:on-click (fn [ev]
-                                         (println "quit clicked" ev)
-                                         (QApplication/quit))}
-               "&Quit"]]])
-
 (def types
   { ;;:window QWindow
    :widget (fn [opts layout]
