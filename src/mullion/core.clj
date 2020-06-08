@@ -88,69 +88,55 @@
                (first r)
                {})
         remain (if (map? (first r))
-                 (rest r)
+                 (doall (rest r))
                  r)
         children? (and remain (vector? (first remain)))
         children (when children? (mapv make-widgets remain))
         [kw ident] (parse-keyword t)
         con (get-constructor kw)
         ]
-    (comment)
-    (prn 'kw kw 'ident ident)
-    (prn t '=> con opts children)
-    (println)
 
-    (let [w (apply con opts (if children? (map :widget children) remain))]
+    (let [w (apply con opts (if children? (mapv :widget children) remain))]
       (when ident
         (swap! id-registry assoc ident w))
       {:widget w
+       ;;:opts opts
+       ;;:tag t
+       ;;:remain remain
        :children children})))
 
+;; (defn alter-widgets [widgets markup]
+;;   (let [[t & r] markup
+;;         opts (if (map? (first r))
+;;                (first r)
+;;                {})
+;;         remain (if (map? (first r))
+;;                  (rest r)
+;;                  r)
+;;         children? (and remain (vector? (first remain)))
+;;         children (when children? (mapv make-widgets remain))
+;;         [kw ident] (parse-keyword t)
+;;         ]
 
+;;     )
+;;   )
 
-#_ (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (libs/init!)
+0
 
-  (when (= args '("--test-load"))
-    (libs/debug-load)
-    (System/exit 0))
-
-  (libs/load-libs)
-  (let [lib-dir (libs/get-lib-dir)
-        app (QApplication.
+(defn make-app []
+  (QApplication.
              (IntPointer. (int-array [3]))
              (PointerPointer.
+              ^"[Ljava.lang.String;"
               (into-array
                String
                ["gettingstarted"
                 "-platformpluginpath"
-                lib-dir])
-              ))
-        text-edit (proxy [QTextEdit] []
-                    (closeEvent [ev] (println "close!" ev)))
-        quit-button (QPushButton. (QString/fromUtf8 "&Quit") )
-        layout (QVBoxLayout.)
-        window (QWidget.)
-        ]
-    (Qt5Widgets/QAbstractButton_clicked
-     quit-button (QObject.)
-     (proxy [Qt5Widgets$ClickedCallback] []
-       (clicked [b]
-         (println "quit clicked" b)
-         (QApplication/quit))
-       )
-     0)
+                (libs/get-lib-dir)])
+              )))
 
-    (.addWidget layout text-edit)
-    (.addWidget layout quit-button)
-    (.setLayout window layout)
-    (.show window)
-    (System/exit (QApplication/exec))
-
-    )
-  )
+(defn quit-app [_]
+  (QApplication/quit))
 
 (defn -main
   "I don't do a whole lot ... yet."
