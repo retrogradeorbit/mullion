@@ -7,7 +7,8 @@ VERSION = 0.1.0-SNAPSHOT
 all: build/mullion
 
 clean:
-	-rm -rf build target
+	-rm -rf build target src/cpp/linux-x86_64 src/cpp/jniMullion.h \
+		src/cpp/jni*.cpp src/cpp/*.class mullion
 	lein clean
 
 target/uberjar/mullion-$(VERSION)-standalone.jar: $(SRC)
@@ -60,3 +61,14 @@ package-macos: all
 	cd build/macos-package && zip ../mullion-$(VERSION)-macos-amd64.zip mullion
 	cp target/uberjar/mullion-$(VERSION)-standalone.jar build/mullion-$(VERSION)-macos-amd64.jar
 	du -sh build/mullion build/mullion-$(VERSION)-macos-amd64.zip build/mullion-$(VERSION)-macos-amd64.jar
+
+src/cpp/jniMullion.h: src/cpp/Mullion.java src/cpp/mullion.cpp
+	which java
+	java -version
+	which javac
+	javac -version
+	cd src/cpp && java -jar ~/.m2/repository/org/bytedeco/javacpp/1.5.4-SNAPSHOT/javacpp-1.5.4-SNAPSHOT.jar Mullion.java -header -nodelete
+
+mullion: src/cpp/jniMullion.h
+	#g++ -I/usr/lib/jvm/java-11-openjdk-amd64/include/ -I/usr/lib/jvm/java-11-openjdk-amd64/include/linux/ src/cpp/mullion.cpp src/cpp/linux-x86_64/libjniMullion.so -o mullion
+	g++ -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux/ mullion.cpp src/cpp/linux-x86_64/libjniMullion.so -o mullion
