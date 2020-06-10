@@ -149,6 +149,7 @@
     (System/exit 0))
 
   (libs/load-libs)
+  ;;(Thread/sleep 2000)
   (let [app (make-app)
         qobj (QObject.)
         ]
@@ -170,10 +171,8 @@
 
       ;;(puget/cprint window)
 
-
-      (locking lock
-        (.setLayout window (:widget tree))
-        (.show ^QWidget window))
+      (.setLayout window (:widget tree))
+      (.show ^QWidget window)
 
       ;; keep getting one of the following
 
@@ -200,13 +199,13 @@
       ;; ... and sometimes it runs fine :shrug:
       (future
            (loop [c 1]
-             (Thread/sleep 1000)
-             (locking lock
-               (->> c
-                    (format "%d seconds")
-                    QString/fromUtf8
-                    (.setText (get-widget :time))))
-             (recur (inc c))))
+             (Thread/sleep 100)
+             (->> (format "%d.%d seconds" (int (/ c 10)) (rem c 10))
+                  QString/fromUtf8
+                  (.setText (get-widget :time)))
+             (if (< c 30)
+               (recur (inc c))
+               (quit-app true))))
 
 
       #_(puget/cprint window)
@@ -226,3 +225,10 @@
 
   #_ (QApplication/exec)
   )
+
+
+;; more
+
+#_   {:type java.lang.RuntimeException,
+    :message "std::bad_alloc",
+    :at [org.bytedeco.qt.Qt5Widgets.QWidget show "QWidget.java" -2]}

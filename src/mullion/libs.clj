@@ -1,7 +1,9 @@
 (ns mullion.libs
   (:require [clojure.string :as string]
             [cheshire.core :as cheshire]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.java.shell :as sh]
+            )
   (:import [org.bytedeco.javacpp Loader]
            [org.bytedeco.qt.global Qt5Core]
            [org.bytedeco.qt.Qt5Widgets QApplication QTextEdit]
@@ -248,40 +250,66 @@
   "Copy any of the bundled dynamic libs from resources to the
   run time lib directory"
   [libs-dir]
-  (doseq [{:keys [filename
-                  linkname
-                  resource-file]}
-          (->> resource-libs
-               (map (fn [{:keys [path names]}]
-                      (for [n names]
-                        (let [resource-file (make-lib-resource-path path n)
-                              link-name (make-lib-link-name n)
-                              filename (make-lib-file-name n)]
-                          (if (not= link-name filename)
-                            {:resource-file resource-file
-                             :filename filename
-                             :linkname link-name}
-                            {:resource-file resource-file
-                             :filename filename})))))
-               (flatten))]
-    (when-let [file (io/resource resource-file)]
-      ;; write out the filename if needed
-      (let [[_ name] (path-split (.getFile file))
-            dest-path (path-join libs-dir name)
-            resource-size (with-open [out (java.io.ByteArrayOutputStream.)]
-                            (io/copy (io/input-stream file) out)
-                            (count (.toByteArray out)))]
-        ;; writing to a library while running its code can result in segfault
-        ;; only write if filesize is different or it doesnt exist
-        (when (or (not (.exists (io/file dest-path)))
-                  (not= (.length (io/file dest-path)) resource-size))
-          ;;(println "writing" resource-size "bytes to" dest-path)
-          (io/copy (io/input-stream file) (io/file dest-path))
+  (prn (->> resource-libs
+                (map (fn [{:keys [path names]}]
+                       (for [n names]
+                         (let [resource-file (make-lib-resource-path path n)
+                               link-name (make-lib-link-name n)
+                               filename (make-lib-file-name n)]
+                           (if (not= link-name filename)
+                             {:resource-file resource-file
+                              :filename filename
+                              :linkname link-name}
+                             {:resource-file resource-file
+                              :filename filename})))))
+                (flatten))
+   )
+  (time
+   (doseq [{:keys [filename
+                   linkname
+                   resource-file]}
+           '({:resource-file "org/bytedeco/javacpp/linux-x86_64/libjnijavacpp.so", :filename "libjnijavacpp.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5DBus.so.5", :filename "libQt5DBus.so.5", :linkname "libQt5DBus.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5Gui.so.5", :filename "libQt5Gui.so.5", :linkname "libQt5Gui.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5XcbQpa.so.5", :filename "libQt5XcbQpa.so.5", :linkname "libQt5XcbQpa.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5Widgets.so.5", :filename "libQt5Widgets.so.5", :linkname "libQt5Widgets.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5PrintSupport.so.5", :filename "libQt5PrintSupport.so.5", :linkname "libQt5PrintSupport.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5Core.so.5", :filename "libQt5Core.so.5", :linkname "libQt5Core.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libjniQt5Core.so", :filename "libjniQt5Core.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libjniQt5Widgets.so", :filename "libjniQt5Widgets.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqxdgdesktopportal.so", :filename "libqxdgdesktopportal.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqxcb.so", :filename "libqxcb.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqlinuxfb.so", :filename "libqlinuxfb.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqminimal.so", :filename "libqminimal.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqoffscreen.so", :filename "libqoffscreen.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libcomposeplatforminputcontextplugin.so", :filename "libcomposeplatforminputcontextplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libibusplatforminputcontextplugin.so", :filename "libibusplatforminputcontextplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqxcb-glx-integration.so", :filename "libqxcb-glx-integration.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqgif.so", :filename "libqgif.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqico.so", :filename "libqico.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqjpeg.so", :filename "libqjpeg.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevkeyboardplugin.so", :filename "libqevdevkeyboardplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevmouseplugin.so", :filename "libqevdevmouseplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevtabletplugin.so", :filename "libqevdevtabletplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevtouchplugin.so", :filename "libqevdevtouchplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libjniQt5Gui.so", :filename "libjniQt5Gui.so"})
+           #_(->> resource-libs
+                (map (fn [{:keys [path names]}]
+                       (for [n names]
+                         (let [resource-file (make-lib-resource-path path n)
+                               link-name (make-lib-link-name n)
+                               filename (make-lib-file-name n)]
+                           (if (not= link-name filename)
+                             {:resource-file resource-file
+                              :filename filename
+                              :linkname link-name}
+                             {:resource-file resource-file
+                              :filename filename})))))
+                (flatten))]
+     (when-let [file (io/resource resource-file)]
+       (println resource-file)
+       (let [out (java.io.ByteArrayOutputStream.)]
+         (dotimes [n 150000] (.write out 10))
+         (.toByteArray out)
+         (.close out)
+         )
 
-          ;; if a symlink is needed, make it
-          (when linkname
-            ;;(println "symlinking" (path-join libs-dir linkname) "to" filename)
-            (symlink (path-join libs-dir linkname) filename)))))))
+       ;;(Thread/sleep 500)
+
+
+       ;; write out the filename if needed
+       #_(let [[_ name] (path-split (.getFile file))
+               dest-path (path-join libs-dir name)
+               resource-size (with-open [out (java.io.ByteArrayOutputStream.)]
+                               (io/copy (io/input-stream file) out)
+                               (count (.toByteArray out)))]
+           ;; writing to a library while running its code can result in segfault
+           ;; only write if filesize is different or it doesnt exist
+           (when (or (not (.exists (io/file dest-path)))
+                     (not= (.length (io/file dest-path)) resource-size))
+             (println "writing" resource-size "bytes to" dest-path)
+             (io/copy (io/input-stream file) (io/file dest-path))
+
+             ;; if a symlink is needed, make it
+             (when linkname
+               (println "symlinking" (path-join libs-dir linkname) "to" filename)
+               (symlink (path-join libs-dir linkname) filename))))))))
 
 (defn get-lib-dir []
   (let [home-dir (System/getenv "HOME")
@@ -293,7 +321,7 @@
         (and (= "Substrate VM" (System/getProperty "java.vm.name"))
              (= "runtime" (System/getProperty "org.graalvm.nativeimage.imagecode")))
         libs-dir (get-lib-dir)]
-    (.mkdirs (io/as-file libs-dir))
+    ;;(.mkdirs (io/as-file libs-dir))
 
     (setup libs-dir)
 
@@ -321,6 +349,17 @@
   (println)
   (println "done"))
 
+#_ (defn load-libs []
+  (loop [[name & remain] library-load-list]
+    (when name
+      (clojure.lang.RT/loadLibrary name)
+      (recur remain))))
+
+#_ (defn load-libs []
+  (run! #(clojure.lang.RT/loadLibrary %) library-load-list))
+
 (defn load-libs []
+  ;;(assert (zero? (:exit (sh/sh "sync"))))
+  ;;(Thread/sleep 1000)
   (doseq [name library-load-list]
     (clojure.lang.RT/loadLibrary name)))
