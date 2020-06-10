@@ -100,8 +100,8 @@
       [
        "Qt5DBus@.5" "Qt5Gui@.5" "Qt5XcbQpa@.5" "Qt5Widgets@.5" "Qt5PrintSupport@.5"
        "Qt5Core@.5" "jniQt5Core" "jniQt5Widgets" "qxdgdesktopportal" "qxcb"
-       "qlinuxfb" #_ "qminimalegl" "qminimal" "qoffscreen" "composeplatforminputcontextplugin"
-       "ibusplatforminputcontextplugin" #_ "qxcb-egl-integration" "qxcb-glx-integration"
+       "qlinuxfb" "qminimalegl" "qminimal" "qoffscreen" "composeplatforminputcontextplugin"
+       "ibusplatforminputcontextplugin" "qxcb-egl-integration" "qxcb-glx-integration"
        "qgif" "qico" "qjpeg" "qevdevkeyboardplugin" "qevdevmouseplugin" "qevdevtabletplugin"
        "qevdevtouchplugin" "jniQt5Gui"]
 
@@ -250,26 +250,11 @@
   "Copy any of the bundled dynamic libs from resources to the
   run time lib directory"
   [libs-dir]
-  (prn (->> resource-libs
-                (map (fn [{:keys [path names]}]
-                       (for [n names]
-                         (let [resource-file (make-lib-resource-path path n)
-                               link-name (make-lib-link-name n)
-                               filename (make-lib-file-name n)]
-                           (if (not= link-name filename)
-                             {:resource-file resource-file
-                              :filename filename
-                              :linkname link-name}
-                             {:resource-file resource-file
-                              :filename filename})))))
-                (flatten))
-   )
   (time
    (doseq [{:keys [filename
                    linkname
                    resource-file]}
-           '({:resource-file "org/bytedeco/javacpp/linux-x86_64/libjnijavacpp.so", :filename "libjnijavacpp.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5DBus.so.5", :filename "libQt5DBus.so.5", :linkname "libQt5DBus.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5Gui.so.5", :filename "libQt5Gui.so.5", :linkname "libQt5Gui.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5XcbQpa.so.5", :filename "libQt5XcbQpa.so.5", :linkname "libQt5XcbQpa.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5Widgets.so.5", :filename "libQt5Widgets.so.5", :linkname "libQt5Widgets.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5PrintSupport.so.5", :filename "libQt5PrintSupport.so.5", :linkname "libQt5PrintSupport.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libQt5Core.so.5", :filename "libQt5Core.so.5", :linkname "libQt5Core.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libjniQt5Core.so", :filename "libjniQt5Core.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libjniQt5Widgets.so", :filename "libjniQt5Widgets.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqxdgdesktopportal.so", :filename "libqxdgdesktopportal.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqxcb.so", :filename "libqxcb.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqlinuxfb.so", :filename "libqlinuxfb.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqminimal.so", :filename "libqminimal.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqoffscreen.so", :filename "libqoffscreen.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libcomposeplatforminputcontextplugin.so", :filename "libcomposeplatforminputcontextplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libibusplatforminputcontextplugin.so", :filename "libibusplatforminputcontextplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqxcb-glx-integration.so", :filename "libqxcb-glx-integration.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqgif.so", :filename "libqgif.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqico.so", :filename "libqico.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqjpeg.so", :filename "libqjpeg.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevkeyboardplugin.so", :filename "libqevdevkeyboardplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevmouseplugin.so", :filename "libqevdevmouseplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevtabletplugin.so", :filename "libqevdevtabletplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libqevdevtouchplugin.so", :filename "libqevdevtouchplugin.so"} {:resource-file "org/bytedeco/qt/linux-x86_64/libjniQt5Gui.so", :filename "libjniQt5Gui.so"})
-           #_(->> resource-libs
+           (->> resource-libs
                 (map (fn [{:keys [path names]}]
                        (for [n names]
                          (let [resource-file (make-lib-resource-path path n)
@@ -283,8 +268,8 @@
                               :filename filename})))))
                 (flatten))]
      (when-let [file (io/resource resource-file)]
-       (println resource-file)
-       (let [out (java.io.ByteArrayOutputStream.)]
+       #_(println resource-file)
+       #_(let [out (java.io.ByteArrayOutputStream.)]
          (dotimes [n 150000] (.write out 10))
          (.toByteArray out)
          (.close out)
@@ -294,7 +279,7 @@
 
 
        ;; write out the filename if needed
-       #_(let [[_ name] (path-split (.getFile file))
+       (let [[_ name] (path-split (.getFile file))
                dest-path (path-join libs-dir name)
                resource-size (with-open [out (java.io.ByteArrayOutputStream.)]
                                (io/copy (io/input-stream file) out)

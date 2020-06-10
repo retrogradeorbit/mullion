@@ -9,8 +9,9 @@
            [org.bytedeco.qt.helper
             Qt5Widgets
             Qt5Widgets$ClickedCallback
-            Qt5Widgets$TextChangedCallback
-            Qt5Widgets$TriggeredCallback]
+            ;;Qt5Widgets$TextChangedCallback
+            ;;Qt5Widgets$TriggeredCallback
+            ]
            [org.bytedeco.qt.Qt5Core QString QObject]
            [org.bytedeco.javacpp PointerPointer IntPointer])
   (:gen-class))
@@ -38,7 +39,7 @@
                      (doseq [child children]
                        (.addWidget w child))
                      w))
-   :text-edit (fn [{:keys [on-change]} & remain]
+   #_:text-edit #_(fn [{:keys [on-change]} & remain]
                 (let [w (QTextEdit.)]
                     (when on-change
                       (Qt5Widgets/QTextEdit_textChanged
